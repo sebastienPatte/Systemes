@@ -8,13 +8,15 @@ int *initialiser_tableau_v1(int n, int valeur) {
 	int *tab = malloc(sizeof(int));
 	tab[0]=valeur;
 	while (2 * len <= n) {
-		int dest = *tab+len*sizeof(int);
-		int src = *tab;
-		memcpy(tab+len*sizeof(int), tab, len*sizeof(int));
+		long unsigned int dest = (long unsigned int)&tab[0]+len*sizeof(int);
+		long unsigned int src = (long unsigned int)&(tab[0]);
+		int size = (len)*sizeof(int);
+		tab = realloc(tab,len*sizeof(int));
+		memcpy( (int*)dest, (int*)src, size);
 		len = len*2;
-		printf("dest : %d\nsrc : %d\n",dest,src);
+		printf("dest : %lu\nsrc : %lu\nsize: %d\n",dest%100,src%100,size);
 	}
-	tab = realloc(tab, len*sizeof(int));
+//	tab = realloc(tab, len*sizeof(int));
 	return tab;
 }
 
@@ -25,6 +27,6 @@ void print_tab(int* t, int n){
 }
 
 int main(){
-	int* tab = initialiser_tableau_v1(4,2);
-	print_tab(tab,4);
+	int* tab = initialiser_tableau_v1(8,2);
+	print_tab(tab,8);
 }
