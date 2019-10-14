@@ -1,0 +1,5 @@
+1/
+les deux process se retrouvent bloqués dans le while
+2/
+cours 4 p16
+
