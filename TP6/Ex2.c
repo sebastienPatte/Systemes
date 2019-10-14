@@ -20,13 +20,39 @@ int *initialiser_tableau_v1(int n, int valeur) {
 	return tab;
 }
 
-void print_tab(int* t, int n){
+void print_tab_int(int* t, int n){
 	for(int i = 0; i<n; i++){
-		printf("%d", t[i]);
-	}printf("\n");
+		printf("%d;", t[i]);
+	}
+	printf("\n");
+}
+
+
+char *initialiser_tableau_char(int dimension, char c){
+		int *tab = malloc(dimension*sizeof(int));
+		memset(tab, c, dimension);
+}
+
+void print_tab_char(char* t, int n){
+	for(int i = 0; i<n; i++){
+		printf("%c;", t[i]);
+	}
+	printf("\n");
+}
+
+void copier_chaine(char *tab, int s1, int taille, int s2){
+	//on utilise memove car la sources et la destination de la copie peuvent se chevaucher
+	memmove((char*)&tab[s2], (char*)&tab[s1], taille*sizeof(char));
 }
 
 int main(){
-	int* tab = initialiser_tableau_v1(8,2);
-	print_tab(tab,8);
+	int* tabInt = initialiser_tableau_v1(8,2);
+	print_tab_int(tabInt,8);
+	char* tabChar = initialiser_tableau_char(10,'x');
+	print_tab_char(tabChar,10);
+	tabChar[0]='A';
+	tabChar[1]='V';
+	tabChar[2]='Z';
+	copier_chaine(tabChar, 0, 3, 2);
+	print_tab_char(tabChar,10);
 }
