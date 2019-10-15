@@ -2,6 +2,10 @@
 #include <stdlib.h>
 
 /*
+Q1/
+la fonction creer_tableau renvoie un pointeur vers tab qui est une variable locale à cette fonction
+dans la fonction main cette adresse ne sera donc pas celle du tableau
+
 int *creer_tableau(int n) {
 	int tab[n];
 	return tab;
@@ -11,11 +15,6 @@ int main() {
 	int *t = creer_tableau(100);
 	return 0;
 }
-
-
-Q1/
-la fonction creer_tableau renvoie un pointeur vers tab qui est une variable locale à cette fonction
-dans la fonction main cette adresse ne sera donc pas celle du tableau
 */
 
 int *allouer_tableau(int dimension, int val){
@@ -95,14 +94,25 @@ void afficher_matrice(int **mat, int lignes, int colonnes){
 
 int main(){
 	int taille = 10;
+
+	printf("allouer_tableau(%d,1) : \n",taille);
 	int* t=allouer_tableau(taille,1);
-//	int* t = lire_entiers();
-//	liberer_tableau(t);
 	afficher_tableau(t,taille);
-//	int** mat = allouer_matrice(10,10,8);
-//	afficher_matrice(mat,10,10);
-//	liberer_matrice(mat,10);
-//	afficher_matrice(mat,10,10);
+	
+	printf("lire_entiers :\n");
+	 t = lire_entiers();
+	
+	printf("liberer tableau\n");
+	liberer_tableau(t);
+	afficher_tableau(t,taille);
+	
+	printf("allouer_matrice(%d,%d,1) : \n",taille,taille);
+	int** mat = allouer_matrice(10,10,8);
+	afficher_matrice(mat,10,10);
+	
+	printf("liberer matrice\n");
+	liberer_matrice(mat,10);
+	afficher_matrice(mat,10,10);
 
 }
 
