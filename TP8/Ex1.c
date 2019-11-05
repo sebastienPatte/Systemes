@@ -37,8 +37,12 @@ void copie(char* path1, char* path2, int size) {
 	
 	}while(sizeOfRead !=0);
 	
-
-
+	struct stat statBuf;
+	fstat(f1,&statBuf);
+	//S_IRWX is a mask for Read Write Read permissions, finished by U for user, G for group and O for Others
+	mode_t file_permision = statBuf.st_mode & (S_IRWXU | S_IRWXG | S_IRWXO); 
+   	printf(" File permission : %o (octal)\n", (unsigned int) file_permision); 
+   	chmod(path2,file_permision);
 	close(f1);
 	close(f2);
 } 
