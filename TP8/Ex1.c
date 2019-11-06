@@ -3,9 +3,13 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <stdio.h>
+#include <dirent.h>
+#include <string.h>
+#include <stdlib.h>
 
 
-void copie(char* path1, char* path2, int size) {      
+void copie(char* path1, char* path2, int size)
+{      
 	
     int f1 = open(path1, O_RDONLY);  
       
@@ -13,7 +17,8 @@ void copie(char* path1, char* path2, int size) {
       
     if (f1 ==-1) 
     { 
-        printf("Error open file1\n");  
+        perror("Error opening file1");  
+        printf("path = \"%s\"\n",path1);
                             
     }
     
@@ -23,13 +28,15 @@ void copie(char* path1, char* path2, int size) {
       
     if (f2 ==-1) 
     { 
-        printf("Error open file2\n");  
+        perror("Error opening file2");  
+        printf("path = \"%s\"\n",path2);
                             
     }
     
     int sizeOfRead;
     char buf[size];
-    do{    
+    do
+    {    
     
     sizeOfRead = read(f1,buf,size);	
 	
@@ -47,9 +54,42 @@ void copie(char* path1, char* path2, int size) {
 	close(f2);
 } 
 
-int main(){
+char* concatenateStr(char* s1, char* s2)
+{
+	char* res;
+	res = calloc(strlen(s1)+strlen(s2), sizeof(char));
+	strcpy(res,s1);
+	strcat(res,s2);
+	return res;
+}
+
+void copieDossier(char* path1, char* path2, int size)
+{
+	struct dirent *srcDirent;
+	DIR* dirSrc;
+	dirSrc = opendir(path1);
+
+	if(dirSrc !=NULL)
+	{
+		while((srcDirent = readdir(dirSrc)) != NULL)
+		{
+			char* fileName = srcDirent->d_name;
+			printf("[%s]\n", fileName);
+			
+			if(fileName != ".." && fileName != ".")
+			{
+				copie(fileName, concatenateStr(path2,fileName), size);
+			}
+		}
+	}
+	closedir(dirSrc);
+}
+
+int main()
+{
 	int sizeBlock = 1024; //4096
-	copie("file1.txt","file2.txt", sizeBlock);
+	//copie("file1.txt","file2.txt", sizeBlock);
+	copieDossier("folder1/","folder2/",sizeBlock);
 }
 
 
