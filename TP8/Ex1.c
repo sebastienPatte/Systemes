@@ -54,7 +54,7 @@ void copie(char* path1, char* path2, int size)
 	close(f2);
 } 
 
-char* concatenateStr(char* s1, char* s2)
+char* concatStr(char* s1, char* s2)
 {
 	char* res;
 	res = calloc(strlen(s1)+strlen(s2), sizeof(char));
@@ -66,6 +66,7 @@ char* concatenateStr(char* s1, char* s2)
 void copieDossier(char* path1, char* path2, int size)
 {
 	struct dirent *srcDirent;
+	struct stat stElt;
 	DIR* dirSrc;
 	dirSrc = opendir(path1);
 
@@ -78,27 +79,88 @@ void copieDossier(char* path1, char* path2, int size)
 			
 			if(fileName != ".." && *fileName != '.')
 			{
+
 				//printf("fileName = |%s|\n", fileName);
+				// ajout des "/" à la fin des noms de dossier
 				if (strlen(path1)-1>=0 && path1[strlen(path1)-1]!='/')
 				{
-					path1 = concatenateStr(path1,"/");
+					path1 = concatStr(path1,"/");
 				}
 				if (strlen(path2)-1>=0 && path2[strlen(path2)-1]!='/')
 				{
-					path2 = concatenateStr(path2,"/");
+					path2 = concatStr(path2,"/");
 				}
-				copie(concatenateStr(path1,fileName), concatenateStr(path2,fileName), size);
+				
+				if(stat(concatStr(path1,fileName),&stElt)==-1)
+				{
+					perror("Error stat ");
+				}
+
+				if(S_ISREG(stElt.st_mode))
+				{//si l'élément est un fichier, on le copie
+					copie(concatStr(path1,fileName), concatStr(path2,fileName), size);	
+				}
+				
 			}
 		}
 	}
 	closedir(dirSrc);
 }
 
+void copieRecursive(char* path1, char* path2, int size)
+{
+	struct dirent *srcDirent;
+	struct stat stElt;
+	DIR* dirSrc;
+	dirSrc = opendir(path1);
+
+	if(dirSrc !=NULL)
+	{
+		copieDossier(path1,path2,size);//on copie les fichier du dossier courant
+		while((srcDirent = readdir(dirSrc)) != NULL)
+		{
+			char* pathElt = srcDirent->d_name;
+			if(pathElt != ".." && *pathElt != '.') 
+			{ // on ignore le dossier courant et le dossier parent
+				
+				printf("path1+elt = %s %s\n", path1,pathElt);
+				if(stat(concatStr(path1,pathElt),&stElt)==-1)
+				{
+					perror("Error stat ");
+				}
+				
+		
+				if(S_ISDIR(stElt.st_mode))
+				{ // si Elt est un dossier
+					if (strlen(pathElt)-1>=0 && pathElt[strlen(pathElt)-1]!='/')
+					{
+						pathElt = concatStr(pathElt,"/");
+					}
+					
+					
+
+					printf("folderPath = %s\n", pathElt);
+					if(mkdir(concatStr(path2,pathElt),0700) == -1)
+					{
+						perror("Error mkdir ");
+					}
+					copieRecursive(concatStr(path1,pathElt),concatStr(path2,pathElt),size);
+					
+				}
+				
+			}
+
+		}
+	}
+}
+
 int main()
 {
 	int sizeBlock = 1024; //4096
 	//copie("file1.txt","file2.txt", sizeBlock);
-	copieDossier("folder1","folder2/",sizeBlock);
+	
+
+	copieRecursive("folder1/","folder2/",sizeBlock);
 }
 
 
