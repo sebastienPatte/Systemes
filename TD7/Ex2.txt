@@ -1,0 +1,9 @@
+cat characters.csv | grep "\"[^\"]*\".*M.*" | cut -d ' ' -f 1 | tr -d ’\"’
+
+cat characters.csv | grep ";M;" | cut -d ' ' -f 1 | tr -d ’\"’
+
+cat characters.csv | cut -d ';' -f 4 | tr -d ’\"’ | sort | uniq | wc -w
+
+cat characters.csv | grep US  | cut -d ';' -f 1 | tr -d ’\"’ | head -n 2 > "head.txt"
+
+
